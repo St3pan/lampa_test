@@ -1,0 +1,63 @@
+{
+  "name": "lampa",
+  "version": "1.0.0",
+  "description": "Test Task for Lampa Software",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "dotenv": "^10.0.0",
+    "eslint": "^7.28.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "lodash": "^4.17.20",
+    "massive": "^6.9.0",
+    "morgan": "^1.10.0",
+    "node-pg-migrate": "^5.9.0",
+    "nodemon": "^2.0.6",
+    "http-errors": "^1.8.0"
+  },
+  "devDependencies": {
+    "husky": "^4.3.0"
+  },
+  "eslintConfig": {
+    "extends": "airbnb",
+    "env": {
+      "browser": true,
+      "node": true,
+      "jest": true
+    },
+    "rules": {
+      "comma-dangle": "off",
+      "no-console": "off",
+      "global-require": "off",
+      "no-param-reassign": [
+        "error",
+        {
+          "props": false
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "server:dev": "nodemon --watch src scripts/start-server-dev.js",
+    "migrate": "node-pg-migrate",
+    "db:migrate": "node scripts/db-migrate",
+    "db:seed": "yarn db:migrate && node scripts/db-seed.js",
+    "lint": "eslint 'src/**/*.js'"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/St3pan/lampa_test.git"
+  },
+  "author": "Stepan Khylko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/St3pan/lampa_test/issues"
+  },
+  "homepage": "https://github.com/St3pan/lampa_test#readme"
+}
