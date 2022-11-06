@@ -1,9 +1,11 @@
 require('dotenv').config();
 
 const DB = require('../src/services/db');
+const { createHash } = require('../src/components/auth/helpers');
 
 const tableCategories = 'categories';
 const tableProducts = 'products';
+const tableUsers = 'users';
 
 const createRecord = (db, table, data) => db[table].insert(data);
 
@@ -56,9 +58,22 @@ function seedProducts(db, categories) {
   return Promise.all(records);
 }
 
+function seedUsers(db) {
+  console.log('Seeding [users]...');
+  const records = [
+    {
+      email: 'admin@email.com',
+      password: createHash('password'),
+    }
+  ];
+
+  return db[tableUsers].insert(records);
+}
+
 function seed(db) {
   return seedCategories(db)
     .then((categories) => seedProducts(db, categories)
+      .then(() => seedUsers(db))
       .then(() => console.log('Successfully completed the seeding process')));
 }
 

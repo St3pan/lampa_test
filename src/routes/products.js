@@ -1,6 +1,7 @@
 const Router = require('express-promise-router');
 const _ = require('lodash');
 const Products = require('../components/products');
+const { authenticate } = require('../components/auth/helpers');
 
 module.exports = (app) => {
   const router = Router();
@@ -24,14 +25,14 @@ module.exports = (app) => {
 
   // Delete Product
 
-  router.delete('/:id(\\d+)', async (req, res) => {
+  router.delete('/:id(\\d+)', authenticate, async (req, res) => {
     const data = await products.delete(req.params.id);
     res.json(data);
   });
 
   // Update Product
 
-  router.put('/:id(\\d+)', async (req, res) => {
+  router.put('/:id(\\d+)', authenticate, async (req, res) => {
     const productBody = _.pick(req.body, 'price', 'title', 'description', 'mainPhoto', 'photos', 'currency', 'createDate', 'categoryId');
     const data = await products.update(req.params.id, productBody);
     res.json(data);
@@ -39,11 +40,11 @@ module.exports = (app) => {
 
   // Create Product
 
-  router.post('/', async (req, res) => {
+  router.post('/', authenticate, async (req, res) => {
     const productBody = _.pick(req.body, 'price', 'title', 'description', 'mainPhoto', 'photos', 'currency', 'createDate', 'categoryId');
     const data = await products.create(productBody);
     res.json(data);
   });
 
-  return Router().use('/product', router);
+  return Router().use('', router);
 };

@@ -1,6 +1,7 @@
 const Router = require('express-promise-router');
 const _ = require('lodash');
 const Categories = require('../components/categories');
+const { authenticate } = require('../components/auth/helpers');
 
 module.exports = (app) => {
   const router = Router();
@@ -33,24 +34,24 @@ module.exports = (app) => {
 
   // Delete Category
 
-  router.delete('/:id(\\d+)', async (req, res) => {
+  router.delete('/:id(\\d+)', authenticate, async (req, res) => {
     const data = await categories.delete(req.params.id);
     res.json(data);
   });
 
   // Update Category
 
-  router.put('/:id(\\d+)', async (req, res) => {
+  router.put('/:id(\\d+)', authenticate, async (req, res) => {
     const data = await categories.update(req.params.id, _.pick(req.body, 'title', 'createDate'));
     res.json(data);
   });
 
   // Create Category
 
-  router.post('/', async (req, res) => {
+  router.post('/', authenticate, async (req, res) => {
     const data = await categories.create(_.pick(req.body, 'title', 'createDate'));
     res.json(data);
   });
 
-  return Router().use('/category', router);
+  return Router().use('/', router);
 };

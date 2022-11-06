@@ -1,9 +1,11 @@
 const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
+const passport = require('passport');
 const DB = require('./services/db');
 const apiProducts = require('./routes/products');
 const apiCategories = require('./routes/categories');
+const apiAuth = require('./routes/auth');
 
 module.exports = async () => {
   const app = express();
@@ -23,8 +25,13 @@ module.exports = async () => {
     next();
   });
 
-  app.use('/', apiProducts(app));
-  app.use('/', apiCategories(app));
+  passport.use(require('./components/auth/local')(app));
+  passport.use(require('./components/auth/jwt')(app));
+
+  app.get('/', (req, res) => res.json({ status: 'ok' }));
+  app.use('/product', apiProducts(app));
+  app.use('/category', apiCategories(app));
+  app.use('/auth', apiAuth(app));
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {
