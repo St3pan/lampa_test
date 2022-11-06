@@ -9,16 +9,17 @@
     "eslint-config-airbnb": "^18.2.1",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "http-errors": "^1.8.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
     "massive": "^6.9.0",
     "morgan": "^1.10.0",
+    "node-cron": "^3.0.2",
     "node-pg-migrate": "^5.9.0",
     "nodemon": "^2.0.6",
-    "http-errors": "^1.8.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
-    "passport-local": "^1.0.0",
-    "jsonwebtoken": "^8.5.1"
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "husky": "^4.3.0"
@@ -44,9 +45,10 @@
   },
   "scripts": {
     "server:dev": "nodemon --watch src scripts/start-server-dev.js",
+    "start": "node scripts/start-server-dev.js",
     "migrate": "node-pg-migrate",
     "db:migrate": "node scripts/db-migrate",
-    "db:seed": "yarn db:migrate && node scripts/db-seed.js",
+    "db:seed": "npm run db:migrate && node scripts/db-seed.js",
     "lint": "eslint 'src/**/*.js'"
   },
   "husky": {

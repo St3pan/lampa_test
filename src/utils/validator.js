@@ -25,8 +25,15 @@ const validateSorting = (params) => {
   return { orderBy, direction };
 };
 
+const validateCurrency = (params) => {
+  const { currency } = params;
+  if (currency && currency !== 'EUR' && currency !== 'USD') throw new Error('Currency must be EUR or USD');
+  return currency;
+};
+
 module.exports = {
   validateProductInput,
   validatePagination,
-  validateSorting
+  validateSorting,
+  validateCurrency
 };

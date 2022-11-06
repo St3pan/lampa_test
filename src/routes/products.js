@@ -19,7 +19,7 @@ module.exports = (app) => {
 
   router.get('/:id(\\d+)', async (req, res) => {
     const { id } = req.params;
-    const data = await products.getOne(id);
+    const data = await products.getOne(id, req.query);
     res.json(data);
   });
 

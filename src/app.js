@@ -2,10 +2,12 @@ const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
 const passport = require('passport');
+const cron = require('node-cron');
 const DB = require('./services/db');
 const apiProducts = require('./routes/products');
 const apiCategories = require('./routes/categories');
 const apiAuth = require('./routes/auth');
+const updateExchangeRate = require('./jobs/updateExchangeRate');
 
 module.exports = async () => {
   const app = express();
@@ -45,6 +47,11 @@ module.exports = async () => {
     // send the error response
     res.status(err.status || 500);
     res.json({ error: true, message: err.message });
+  });
+
+  cron.schedule('*/5 * * * *', () => {
+    console.log('Updating exchange rate...');
+    updateExchangeRate(app);
   });
 
   return app;

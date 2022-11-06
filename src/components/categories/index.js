@@ -1,8 +1,11 @@
-const { validatePagination } = require('../../utils/validator');
+const { validatePagination, validateCurrency } = require('../../utils/validator');
+const ExchangeRate = require('../exchangeRate');
+const { convertArrayOfProducts } = require('../../utils/convertPrice');
 
 module.exports = (app) => {
   const db = app.get('db');
   const { categories, products } = db;
+  const exchangeRate = ExchangeRate(app);
   const module = {};
 
   // Get Categories
@@ -23,11 +26,16 @@ module.exports = (app) => {
 
   module.getCategoryProducts = async (id, params) => {
     const { limit, page } = validatePagination(params);
-    const categoryProducts = await products.find({ categoryId: id }, {
+    const currency = validateCurrency(params);
+    let categoryProducts = await products.find({ categoryId: id }, {
       limit,
       offset: limit * page,
       fields: ['id', 'price', 'title', 'mainPhoto', 'createDate']
     });
+    if (currency) {
+      const dbCurrency = await exchangeRate.getOneByCurrency(currency);
+      categoryProducts = convertArrayOfProducts(categoryProducts, dbCurrency.rate);
+    }
     const category = await categories.findOne({ id });
     return {
       category,

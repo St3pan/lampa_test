@@ -1,8 +1,13 @@
-const { validateProductInput, validatePagination, validateSorting } = require('../../utils/validator');
+const {
+  validateProductInput, validatePagination, validateSorting, validateCurrency
+} = require('../../utils/validator');
+const { convertArrayOfProducts, convertSingleProduct } = require('../../utils/convertPrice');
+const ExchangeRate = require('../exchangeRate');
 
 module.exports = (app) => {
   const db = app.get('db');
   const { products } = db;
+  const exchangeRate = ExchangeRate(app);
   const module = {};
 
   // Get Products
@@ -10,7 +15,8 @@ module.exports = (app) => {
   module.get = async (params) => {
     const { limit, page } = validatePagination(params);
     const { orderBy, direction } = validateSorting(params);
-    return products.find({}, {
+    const currency = validateCurrency(params);
+    let dbProducts = await products.find({}, {
       offset: limit * page,
       limit,
       fields: ['id', 'price', 'title', 'mainPhoto', 'createDate'],
@@ -21,13 +27,26 @@ module.exports = (app) => {
         }
       ]
     });
+    if (currency) {
+      const dbCurrency = await exchangeRate.getOneByCurrency(currency);
+      dbProducts = convertArrayOfProducts(dbProducts, dbCurrency.rate);
+    }
+    return dbProducts;
   };
 
   // Get Single Product
 
-  module.getOne = async (id) => products.findOne({ id }, {
-    fields: ['id', 'price', 'title', 'description', 'mainPhoto', 'photos', 'createDate']
-  });
+  module.getOne = async (id, params) => {
+    const currency = validateCurrency(params);
+    let product = await products.findOne({ id }, {
+      fields: ['id', 'price', 'title', 'description', 'mainPhoto', 'photos', 'createDate']
+    });
+    if (currency) {
+      const dbCurrency = await exchangeRate.getOneByCurrency(currency);
+      product = convertSingleProduct(product, dbCurrency.rate);
+    }
+    return product;
+  };
 
   // Delete Product
 

@@ -6,6 +6,7 @@ const { createHash } = require('../src/components/auth/helpers');
 const tableCategories = 'categories';
 const tableProducts = 'products';
 const tableUsers = 'users';
+const tableExchangeRate = 'exchangeRate';
 
 const createRecord = (db, table, data) => db[table].insert(data);
 
@@ -70,10 +71,27 @@ function seedUsers(db) {
   return db[tableUsers].insert(records);
 }
 
+function seedExchangeRate(db) {
+  console.log('Seeding [exchangeRate]');
+  const records = [
+    {
+      currency: 'USD',
+      rate: 39.99
+    },
+    {
+      currency: 'EUR',
+      rate: 39.20
+    }
+  ];
+
+  return db[tableExchangeRate].insert(records);
+}
+
 function seed(db) {
   return seedCategories(db)
     .then((categories) => seedProducts(db, categories)
       .then(() => seedUsers(db))
+      .then(() => seedExchangeRate(db))
       .then(() => console.log('Successfully completed the seeding process')));
 }
 
